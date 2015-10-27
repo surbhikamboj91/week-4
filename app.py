@@ -46,7 +46,7 @@ def getData():
 	print "received coordinates: [" + lat1 + ", " + lat2 + "], [" + lng1 + ", " + lng2 + "]"
 	
 	client = pyorient.OrientDB("localhost", 2424)
-	session_id = client.connect("root", "password")
+	session_id = client.connect("root", "1111")
 	db_name = "soufun"
 	db_username = "admin"
 	db_password = "admin"

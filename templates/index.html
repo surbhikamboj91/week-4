@@ -21,25 +21,31 @@
 		circle {
 			fill-opacity: .3;
 			fill: red;
-			stroke-width: 0px;
+			stroke-width: 1px;
 		}
 		circle:hover {
-		  	stroke: black;
-		  	stroke-width: 2px;
-		  	cursor: crosshair;
+		  	stroke: white;
+		  	stroke-width: 3px;
+		  	fill-opacity: .8;
+		  	fill: white;
+		  	cursor: pointer;
 		}
 
 		/*EXPERIMENT WITH YOUR OWN STYLING RULES TO CHANGE THE APPEARANCE OF THE TOOLTIP, THE MENU, AND THE MESSAGE TEXT*/
 		div.tooltip{
+			border-radius: 6px; 
+			border-spacing: 1;
 			padding: 6px;
-			background: white;
+			background: rgb(84,84,84);
 			visibility: hidden;
 			position: absolute;
 			z-index: 10;
+			display: inline;
 		}
 		p.tooltip-text{
 			margin: 0px;
 			padding: 0px;
+			color: white;
 		}
 
 		div.menu{
@@ -68,9 +74,12 @@
 
 	<!-- CHANGE THE STRUCTURE OF THE TOOLTIP TO DISPLAY THE LATITUDE AND LONGITUDE OF EACH POINT. ALSO, YOU COULD TRY TO DISPLAY ANOTHER PIECE OF DATA ABOUT THE POINT, BUT REMEMBER YOU FIRST NEED TO MAKE SURE TO SEND THIS DATA BACK FROM THE SERVER -->
 	<div class="tooltip">
-		<p class="tooltip-text" id="title">This is the title</p>
-		<p class="tooltip-text" id="price">This is the price</p>
-	</div>
+		<p class="tooltip-text" id="longitude">This is the longitude</p>
+		<p class="tooltip-text" id="latitude">This is latitude</p>
+		<p class="tooltip-text"	id="price">Price: </p>
+			</div>
+	
+
 
 	<!-- EXPERIMENT WITH OTHER FORM ELEMENTS, AND ADD SOME TEXT TO THE MENU TO EXPLAIN WHAT IS HAPPENING ON THE SITE -->
 	<div class="menu">
@@ -79,6 +88,12 @@
 			<p><input id="heatmap" type="checkbox">Heat Map</p>
 			<p><input type="button" value="Update Data" onclick="updateData()"></p>
 			<p>Status: <em id="message"></em></p>
+			<pre>
+
+
+			</pre>
+			<p><input id="propertyPrices" type="checkbox">Property Prices</p>
+
 		</form>
 	</div>
 
@@ -95,7 +110,8 @@
 
 		// DON'T FORGET TO CHANGE THIS CODE DEPENDING ON THE DATA YOU'RE DISPLAYING IN YOUR TOOLTIP
 		var tooltip = d3.select("div.tooltip");
-		var tooltip_title = d3.select("#title");
+		var tooltip_longitude = d3.select("#longitude");
+		var tooltip_latitude = d3.select("#latitude");
 		var tooltip_price = d3.select("#price");
 
 
@@ -109,11 +125,11 @@
 
 		//uncomment for Mapbox implementation, and supply your own access token
 
-		// L.tileLayer('https://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={accessToken}', {
-		// 	attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-		// 	mapid: 'mapbox.light',
-		// 	accessToken: [INSERT YOUR TOKEN HERE!]
-		// }).addTo(map);
+		L.tileLayer('https://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={accessToken}', {
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			mapid: 'mapbox.dark',
+		accessToken: "pk.eyJ1Ijoic3VyYmhpa2FtYm9qOTEiLCJhIjoiY2lmbGpteHdtMmx2MXNpa3FrZW81YW52dCJ9.t0bkQdk_cfuezDK-qNcdog"
+		 }).addTo(map);
 
 		//create variables to store a reference to svg and g elements
 
@@ -153,8 +169,8 @@
 					.append("circle")
 					.on("mouseover", function(d){
 						tooltip.style("visibility", "visible");
-						tooltip_title.text(d.properties.name);
-						tooltip_price.text("Price: " + d.properties.price);
+						tooltip_longitude.text("Longitude: " + d.geometry.coordinates[1]);
+						tooltip_latitude.text("Latitude: " + d.geometry.coordinates[0]);
 					})
 					.on("mousemove", function(){
 						tooltip.style("top", (d3.event.pageY-10)+"px")
@@ -162,6 +178,9 @@
 					})
 					.on("mouseout", function(){
 						tooltip.style("visibility", "hidden");
+					})
+					.on("click", function(d){
+						tooltip_price.text("Price: " + d.properties.price);
 					})
 				;
 
